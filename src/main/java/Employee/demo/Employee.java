@@ -9,18 +9,21 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-
-    @NotBlank
+    @Column
     private String firstName;
 
-    @NotBlank
+    @Column
     private String lastName;
 
-    @Email
-    @NotBlank
+    @Column
     private String email;
-
     // Getters and setters
+
+
+    public Long getId() {
+        return Id;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -33,6 +36,9 @@ public class Employee {
         return email;
     }
 
+    public void setId(Long id) {
+        Id = id;
+    }
     public void setFirstName(String first_name) {
         firstName=first_name;
     }
