@@ -1,38 +1,102 @@
 package Employee.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import javax.validation.Valid;
 import java.util.List;
+
+
 
 @RestController
 @RequestMapping("/api/employees")
+@Validated
 public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
+    public ResponseEntity<ApiResponse> HandlingPutPost(@Valid Employee employee, long id, Errors errors){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        System.out.println(errors);
+        if(errors.hasErrors()){
+            ApiResponse response = new ApiResponse("failed", "Validation error", errors);
+            return ResponseEntity.badRequest().headers(headers).body(response);
+        }
+            //Edit
+        if(id != -1) {
+            Employee updatedEmployee = employeeService.updateEmployee(id, employee);
+            if (updatedEmployee == null) {
+                ApiResponse response = new ApiResponse("failed", "Employee not found", null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(headers).body(response);
+            }
+
+            ApiResponse response = new ApiResponse("success", "Employee updated successfully", updatedEmployee);
+            return ResponseEntity.ok().headers(headers).body(response);
+        }
+        //Create
+        else {
+            Employee createdEmployee = employeeService.createEmployee(employee);
+            ApiResponse response = new ApiResponse("success", "Employee created successfully", createdEmployee);
+            return ResponseEntity.ok().headers(headers).body(response);
+
+            }
+        }
+
     @GetMapping
-    public List<Employee> getAllEmployees() {
-        return employeeService.getAllEmployees();
+    public ResponseEntity<ApiResponse> getAllEmployees() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        List<Employee> employees = employeeService.getAllEmployees();
+        ApiResponse response = new ApiResponse("success", "Employees fetched successfully", employees);
+        return ResponseEntity.ok().headers(headers).body(response);
     }
 
     @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable Long id) {
-        return employeeService.getEmployeeById(id);
+    public ResponseEntity<ApiResponse> getEmployeeById(@PathVariable Long id) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Employee employee = employeeService.getEmployeeById(id);
+        ApiResponse response;
+        if(employee != null) {
+            response = new ApiResponse("success", "Employee fetched successfully", employee);
+        }
+        else {
+            response = new ApiResponse("failed", "Employee wasn't found", null);
+        }
+        return ResponseEntity.ok().headers(headers).body(response);
     }
 
     @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeService.createEmployee(employee);
+    public ResponseEntity<ApiResponse> createEmployee(@RequestBody Employee employee, BindingResult bindingResult) {
+        return HandlingPutPost(employee,-1, bindingResult);
     }
 
-    @PutMapping("/{id}")
-    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
-        return employeeService.updateEmployee(id, employee);
+
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<ApiResponse> updateEmployee(@PathVariable Long id, @Valid @RequestBody Employee employee, BindingResult bindingResult) {
+       return HandlingPutPost(employee,id,bindingResult);
+
     }
+
 
     @DeleteMapping("/{id}")
-    public void deleteEmployee(@PathVariable Long id) {
-        employeeService.deleteEmployee(id);
+    public ResponseEntity<ApiResponse> deleteEmployee(@PathVariable Long id) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        Employee employee = employeeService.getEmployeeById(id);
+        ApiResponse response;
+        if(employee != null) {
+            employeeService.deleteEmployee(id);
+            response = new ApiResponse("success", "Employee deleted successfully", employee);
+        }
+        else {
+            response = new ApiResponse("failed", "Employee wasn't found", null);
+        }
+        return ResponseEntity.ok().headers(headers).body(response);
     }
 }

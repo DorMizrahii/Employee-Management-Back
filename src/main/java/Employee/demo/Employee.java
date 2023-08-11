@@ -1,6 +1,9 @@
 package Employee.demo;
-
 import jakarta.persistence.*;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+
 
 @Entity
 @Table(name = "employee")
@@ -9,13 +12,17 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @Column
+    @Column(nullable = false)
+    @NotEmpty(message = "First Name is required")
     private String firstName;
 
-    @Column
+    @Column(nullable = false)
+    @NotEmpty(message = "Last Name is required")
     private String lastName;
 
-    @Column
+    @Column(nullable=false)
+    @Email(regexp = "^(.+)@(.+)$" ,message = "Invalid email format")
+    @NotEmpty(message = "Email is required")
     private String email;
     // Getters and setters
 
@@ -23,7 +30,6 @@ public class Employee {
     public Long getId() {
         return Id;
     }
-
     public String getFirstName() {
         return firstName;
     }
@@ -50,7 +56,6 @@ public class Employee {
     public void setEmail(String email_address) {
         email = email_address;
     }
-
 
 
 }
