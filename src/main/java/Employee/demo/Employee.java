@@ -24,6 +24,8 @@ public class Employee {
     @Email(regexp = "^(.+)@(.+)$" ,message = "Invalid email format")
     @NotEmpty(message = "Email is required")
     private String email;
+   
+    
     // Getters and setters
 
 
