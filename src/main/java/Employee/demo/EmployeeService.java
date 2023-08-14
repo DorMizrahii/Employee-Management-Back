@@ -2,9 +2,9 @@ package Employee.demo;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 
 import java.util.List;
@@ -14,7 +14,11 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    public List<Employee> getAllEmployees() {
+    public Page<Employee> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable);
+    }
+
+    public List<Employee> getNumberOfEmployees(){
         return employeeRepository.findAll();
     }
 

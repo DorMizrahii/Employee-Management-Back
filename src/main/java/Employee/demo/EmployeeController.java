@@ -70,13 +70,22 @@ public class EmployeeController {
             }
         }
 
+        @GetMapping ("/getNumberOfEmployees")
+        public ResponseEntity<ApiResponse> GetNumberOfEmployees(){
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            int NumberOfEmployees = employeeService.getNumberOfEmployees().size();
+            ApiResponse response = new ApiResponse("success", "Employees fetched successfully", NumberOfEmployees);
+            return ResponseEntity.ok().headers(headers).body(response);
+        }
 
     @GetMapping
-    public ResponseEntity<ApiResponse> getAllEmployees() {
+    public ResponseEntity<ApiResponse> getAllEmployees(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "4") int size) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        List<Employee> employees = employeeService.getAllEmployees();
-        ApiResponse response = new ApiResponse("success", "Employees fetched successfully", employees);
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<Employee> employeePage = employeeService.getAllEmployees(pageable);
+        ApiResponse response = new ApiResponse("success", "Employees fetched successfully", employeePage.getContent());
         return ResponseEntity.ok().headers(headers).body(response);
     }
 
