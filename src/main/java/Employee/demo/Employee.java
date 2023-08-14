@@ -1,12 +1,12 @@
 package Employee.demo;
 import jakarta.persistence.*;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 
 @Entity
 @Table(name = "employee")
+
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,6 +56,5 @@ public class Employee {
     public void setEmail(String email_address) {
         email = email_address;
     }
-
 
 }

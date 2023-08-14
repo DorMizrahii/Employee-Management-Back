@@ -1,13 +1,19 @@
 package Employee.demo;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 
@@ -17,14 +23,32 @@ import java.util.List;
 public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
+    private GlobalExceptionHandler gex;
 
-    public ResponseEntity<ApiResponse> HandlingPutPost(@Valid Employee employee, long id, Errors errors){
+
+    boolean isValid(Employee employeeToCheck) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+
+        Pattern pat = Pattern.compile(emailRegex);
+
+        return Stream.of(
+                        employeeToCheck.getFirstName(),
+                        employeeToCheck.getLastName(),
+                        employeeToCheck.getEmail()
+                )
+                .allMatch(value -> value != null && !value.trim().isEmpty())
+                && pat.matcher(employeeToCheck.getEmail()).matches();
+    }
+
+    public ResponseEntity<ApiResponse> HandlingPutPost(@Valid Employee employee, long id, @NotNull BindingResult bindingResult){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        System.out.println(errors);
-        if(errors.hasErrors()){
-            ApiResponse response = new ApiResponse("failed", "Validation error", errors);
-            return ResponseEntity.badRequest().headers(headers).body(response);
+        if (!isValid(employee)) {
+            ApiResponse response = new ApiResponse("failed", "Validation error", null);
+            return ResponseEntity.badRequest().body(response);
         }
             //Edit
         if(id != -1) {
@@ -45,6 +69,7 @@ public class EmployeeController {
 
             }
         }
+
 
     @GetMapping
     public ResponseEntity<ApiResponse> getAllEmployees() {
@@ -72,7 +97,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createEmployee(@RequestBody Employee employee, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse> createEmployee(@Valid @RequestBody Employee employee, BindingResult bindingResult) {
         return HandlingPutPost(employee,-1, bindingResult);
     }
 
