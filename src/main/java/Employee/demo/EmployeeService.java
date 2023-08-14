@@ -14,6 +14,10 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
+
     public Page<Employee> getAllEmployees(Pageable pageable) {
         return employeeRepository.findAll(pageable);
     }

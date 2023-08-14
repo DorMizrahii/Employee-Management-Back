@@ -40,7 +40,9 @@ public class EmployeeController {
                         employeeToCheck.getEmail()
                 )
                 .allMatch(value -> value != null && !value.trim().isEmpty())
-                && pat.matcher(employeeToCheck.getEmail()).matches();
+                && pat.matcher(employeeToCheck.getEmail()).matches()
+                && employeeToCheck.getFirstName().matches("[a-zA-Z]+")
+                && employeeToCheck.getLastName().matches("[a-zA-Z]+");
     }
 
     public ResponseEntity<ApiResponse> HandlingPutPost(@Valid Employee employee, long id, @NotNull BindingResult bindingResult){
