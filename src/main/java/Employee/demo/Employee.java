@@ -24,7 +24,11 @@ public class Employee {
     @Email(regexp = "^(.+)@(.+)$" ,message = "Invalid email format")
     @NotEmpty(message = "Email is required")
     private String email;
-   
+
+    @Column(nullable = false)
+    @NotEmpty(message = "Nick name is required")
+    private String nickName;
+
     
     // Getters and setters
 
@@ -44,6 +48,8 @@ public class Employee {
         return email;
     }
 
+    public String getNickname() { return nickName;}
+
     public void setId(Long id) {
         Id = id;
     }
@@ -58,5 +64,7 @@ public class Employee {
     public void setEmail(String email_address) {
         email = email_address;
     }
+
+    public void setNickName(String nick_name) {this.nickName = nick_name;}
 
 }

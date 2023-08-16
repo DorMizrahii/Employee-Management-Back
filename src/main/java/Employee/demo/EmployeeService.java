@@ -18,12 +18,11 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public Page<Employee> getAllEmployees(Pageable pageable) {
-        return employeeRepository.findAll(pageable);
-    }
-
-    public List<Employee> getNumberOfEmployees(){
+    public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
+    }
+    public Page<Employee> getPageEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable);
     }
 
     public Employee getEmployeeById(Long id) {
@@ -31,20 +30,22 @@ public class EmployeeService {
     }
 
     public Employee createEmployee(@NotNull Employee employee) {
-        System.out.println(employee.getId());
         return employeeRepository.save(employee);
     }
 
-    public Employee updateEmployee(Long id, Employee employeeDetails) {
+    public Employee updateEmployee(Long id, @NotNull Employee employeeDetails) {
         Employee employee = employeeRepository.findById(id).orElse(null);
 
 
         if (employee == null) {
             return null;
         }
+
         employee.setFirstName(employeeDetails.getFirstName());
         employee.setLastName(employeeDetails.getLastName());
         employee.setEmail(employeeDetails.getEmail());
+        employee.setNickName(employeeDetails.getNickname());
+
         return employeeRepository.save(employee);
 
     }

@@ -37,12 +37,16 @@ public class EmployeeController {
         return Stream.of(
                         employeeToCheck.getFirstName(),
                         employeeToCheck.getLastName(),
-                        employeeToCheck.getEmail()
+                        employeeToCheck.getEmail(),
+                        employeeToCheck.getNickname()
+
                 )
                 .allMatch(value -> value != null && !value.trim().isEmpty())
                 && pat.matcher(employeeToCheck.getEmail()).matches()
                 && employeeToCheck.getFirstName().matches("[a-zA-Z]+")
-                && employeeToCheck.getLastName().matches("[a-zA-Z]+");
+                && employeeToCheck.getLastName().matches("[a-zA-Z]+")
+                && employeeToCheck.getNickname().matches("[a-zA-Z]+");
+
     }
 
     public ResponseEntity<ApiResponse> HandlingPutPost(@Valid Employee employee, long id, @NotNull BindingResult bindingResult){
@@ -76,17 +80,26 @@ public class EmployeeController {
         public ResponseEntity<ApiResponse> GetNumberOfEmployees(){
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            int NumberOfEmployees = employeeService.getNumberOfEmployees().size();
+            int NumberOfEmployees = employeeService.getAllEmployees().size();
             ApiResponse response = new ApiResponse("success", "Employees fetched successfully", NumberOfEmployees);
             return ResponseEntity.ok().headers(headers).body(response);
         }
+    @GetMapping ("/getAllEmployees")
+    public ResponseEntity<ApiResponse> getAllEmployees(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        List <Employee> employees = employeeService.getAllEmployees();
+        ApiResponse response = new ApiResponse("success", "Employees fetched successfully", employees);
+        return ResponseEntity.ok().headers(headers).body(response);
+    }
+
 
     @GetMapping
-    public ResponseEntity<ApiResponse> getAllEmployees(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "4") int size) {
+    public ResponseEntity<ApiResponse> getPageEmployees(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         Pageable pageable = PageRequest.of(page-1, size);
-        Page<Employee> employeePage = employeeService.getAllEmployees(pageable);
+        Page<Employee> employeePage = employeeService.getPageEmployees(pageable);
         ApiResponse response = new ApiResponse("success", "Employees fetched successfully", employeePage.getContent());
         return ResponseEntity.ok().headers(headers).body(response);
     }
