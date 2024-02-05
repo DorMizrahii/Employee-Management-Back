@@ -44,7 +44,7 @@ public class EmployeeService {
         employee.setFirstName(employeeDetails.getFirstName());
         employee.setLastName(employeeDetails.getLastName());
         employee.setEmail(employeeDetails.getEmail());
-        employee.setNickName(employeeDetails.getNickname());
+        employee.setNickname(employeeDetails.getNickname());
 
         return employeeRepository.save(employee);
 

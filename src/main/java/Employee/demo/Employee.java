@@ -27,7 +27,7 @@ public class Employee {
 
     @Column(nullable = false)
     @NotEmpty(message = "Nick name is required")
-    private String nickName;
+    private String nickname;
 
     
     // Getters and setters
@@ -48,7 +48,7 @@ public class Employee {
         return email;
     }
 
-    public String getNickname() { return nickName;}
+    public String getNickname() { return nickname;}
 
     public void setId(Long id) {
         Id = id;
@@ -65,6 +65,6 @@ public class Employee {
         email = email_address;
     }
 
-    public void setNickName(String nick_name) {this.nickName = nick_name;}
+    public void setNickname(String nick_name) {this.nickname = nick_name;}
 
 }
